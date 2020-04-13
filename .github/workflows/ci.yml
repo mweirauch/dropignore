@@ -17,14 +17,35 @@ jobs:
           profile: minimal
           components: rustfmt, clippy
 
-      - name: Run rustfmt
+      - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
 
-      - name: Run clippy
+      - name: Run cargo clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: -- -D warnings
+
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
