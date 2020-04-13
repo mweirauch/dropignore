@@ -18,10 +18,7 @@ struct ScannerStats {
 
 impl Scanner {
     pub fn new(matcher: Matcher, dropbox: Dropbox) -> Result<Self, String> {
-        Ok(Scanner {
-            dropbox: dropbox,
-            matcher: matcher,
-        })
+        Ok(Scanner { dropbox, matcher })
     }
 
     pub fn scan(&self, directory_in: PathBuf, dry_run: bool) {
@@ -53,7 +50,7 @@ impl Scanner {
         if entry
             .file_name()
             .to_str()
-            .map(|s| s.starts_with("."))
+            .map(|s| s.starts_with('.'))
             .unwrap_or(false)
         {
             // println!("SKIPDOT {:?}", path);
@@ -70,11 +67,10 @@ impl Scanner {
 
             if dry_run {
                 println!("IGNORE  {:?}", path);
+            } else if self.dropbox.ignore(path) {
+                println!("IGNORED {:?}", path);
             } else {
-                match self.dropbox.ignore(path) {
-                    true => println!("IGNORED {:?}", path),
-                    false => eprintln!("Failed ignoring {:?}", path),
-                }
+                eprintln!("Failed ignoring {:?}", path);
             }
 
             scanner_stats.new_ignores += 1;

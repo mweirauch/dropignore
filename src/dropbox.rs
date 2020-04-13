@@ -11,7 +11,7 @@ impl Dropbox {
     }
 
     pub fn is_ignored(&self, path: &Path) -> bool {
-        let is_ignored = match xattr::get(path, IGNORE_ATTRIBUTE_KEY) {
+        match xattr::get(path, IGNORE_ATTRIBUTE_KEY) {
             Ok(attribute) => {
                 if let Some(bytes) = attribute {
                     if bytes.eq(&IGNORE_ATTRIBUTE_VALUE_IGNORED) {
@@ -21,9 +21,7 @@ impl Dropbox {
                 false
             }
             _ => false,
-        };
-
-        is_ignored
+        }
     }
 
     pub fn ignore(&self, path: &Path) -> bool {

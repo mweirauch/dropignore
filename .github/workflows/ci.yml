@@ -1,0 +1,58 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: "true"
+          profile: minimal
+          components: rustfmt, clippy
+
+      - name: Run cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: "true"
+          profile: minimal
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
