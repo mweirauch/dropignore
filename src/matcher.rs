@@ -49,10 +49,7 @@ impl Matcher {
     }
 }
 
-fn build_globset(
-    builder: &mut GlobSetBuilder,
-    matcher_specs: &Vec<MatcherSpec>,
-) -> Result<(), Error> {
+fn build_globset(builder: &mut GlobSetBuilder, matcher_specs: &[MatcherSpec]) -> Result<(), Error> {
     for matcher_spec in matcher_specs.iter() {
         let glob = Glob::new(&matcher_spec.pattern);
 
