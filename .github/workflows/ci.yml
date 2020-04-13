@@ -40,6 +40,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set up toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: "true"
+          profile: minimal
+
       - name: Run cargo build
         uses: actions-rs/cargo@v1
         with:
