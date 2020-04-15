@@ -100,31 +100,37 @@ mod tests {
     }
 
     fn arrange_test_directory() -> TempDir {
-        // we can't use tmpfs - at least on linux - as that one doesn't
-        // support extended file system attributes
-        let base_dirs = BaseDirs::new().unwrap();
-        let cache_dir = base_dirs.cache_dir();
+        let mut builder = Builder::new();
+        builder.prefix(TEST_ITEM_PREFIX);
 
-        let temp = Builder::new()
-            .prefix(TEST_ITEM_PREFIX)
-            .tempdir_in(cache_dir)
-            .unwrap();
+        let temp = if cfg!(target_os = "linux") {
+            // we can't use tmpfs on linux as it doesn't
+            // support extended file system attributes
+            let base_dirs = BaseDirs::new().unwrap();
+            let cache_dir = base_dirs.cache_dir();
+            builder.tempdir_in(cache_dir)
+        } else {
+            builder.tempdir()
+        };
 
-        temp
+        temp.unwrap()
     }
 
     fn arrange_test_file() -> NamedTempFile {
-        // we can't use tmpfs - at least on linux - as that one doesn't
-        // support extended file system attributes
-        let base_dirs = BaseDirs::new().unwrap();
-        let cache_dir = base_dirs.cache_dir();
+        let mut builder = Builder::new();
+        builder.prefix(TEST_ITEM_PREFIX);
 
-        let temp = Builder::new()
-            .prefix(TEST_ITEM_PREFIX)
-            .tempfile_in(cache_dir)
-            .unwrap();
+        let temp = if cfg!(target_os = "linux") {
+            // we can't use tmpfs on linux as it doesn't
+            // support extended file system attributes
+            let base_dirs = BaseDirs::new().unwrap();
+            let cache_dir = base_dirs.cache_dir();
+            builder.tempfile_in(cache_dir)
+        } else {
+            builder.tempfile()
+        };
 
-        temp
+        temp.unwrap()
     }
 
     fn arrange_ignored_attribute(path: &Path) {
