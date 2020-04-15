@@ -40,7 +40,8 @@ mod tests {
     use super::Dropbox;
     use directories::BaseDirs;
     use rstest::rstest;
-    use std::path::Path;
+    use std::fs;
+    use std::path::{Path, PathBuf};
     use tempfile::{Builder, NamedTempFile, TempDir};
 
     const TEST_ITEM_PREFIX: &str = "dropignore-testing";
@@ -104,10 +105,7 @@ mod tests {
         builder.prefix(TEST_ITEM_PREFIX);
 
         let temp = if cfg!(target_os = "linux") {
-            // we can't use tmpfs on linux as it doesn't
-            // support extended file system attributes
-            let base_dirs = BaseDirs::new().unwrap();
-            let cache_dir = base_dirs.cache_dir();
+            let cache_dir = user_cache_directory_path();
             builder.tempdir_in(cache_dir)
         } else {
             builder.tempdir()
@@ -121,16 +119,26 @@ mod tests {
         builder.prefix(TEST_ITEM_PREFIX);
 
         let temp = if cfg!(target_os = "linux") {
-            // we can't use tmpfs on linux as it doesn't
-            // support extended file system attributes
-            let base_dirs = BaseDirs::new().unwrap();
-            let cache_dir = base_dirs.cache_dir();
+            let cache_dir = user_cache_directory_path();
             builder.tempfile_in(cache_dir)
         } else {
             builder.tempfile()
         };
 
         temp.unwrap()
+    }
+
+    #[cfg(target_os = "linux")]
+    fn user_cache_directory_path() -> PathBuf {
+        // we can't use tmpfs on linux as it doesn't
+        // support extended file system attributes
+        let base_dirs = BaseDirs::new().unwrap();
+        let cache_dir = base_dirs.cache_dir();
+
+        // create in case it's not present
+        fs::create_dir_all(cache_dir).unwrap();
+
+        cache_dir.into()
     }
 
     fn arrange_ignored_attribute(path: &Path) {
