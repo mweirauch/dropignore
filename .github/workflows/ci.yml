@@ -33,7 +33,9 @@ jobs:
     name: Test
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os:
+          - ubuntu-latest
+          - macos-latest
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -56,3 +58,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: -- --nocapture

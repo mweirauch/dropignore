@@ -23,7 +23,14 @@ cargo install --git https://github.com/mweirauch/dropignore
 
 After you have installed the binary you need to create a configuration file which contains the ignore and skip specifications of the file or folder names you want to ignore (not sync) or skip (keep synced) with your Dropbox. Providing skip specifications is optional. You just need them in case a ignore specification is too broad and would include any files or folders you don't want to be ignored.
 
-The configuration file location is `~/.config/dropignore/dropignore.yaml` and could look like this:
+The configuration file locations are as follows:
+
+| System      | Location                                                       |
+| :---------- | :------------------------------------------------------------- |
+| Linux dist. | `/home/charly/.config/dropignore/dropignore.yaml`              |
+| macOS       | `/Users/charly/Library/Preferences/dropignore/dropignore.yaml` |
+
+The configuration file could look like this:
 
 ```yaml
 matcher:
@@ -51,7 +58,7 @@ This will scan the given path (or the current working directory if omitted) for 
 ## Notes and Limitations
 
 * **use at your own risk** - allthough no data deletion is performed, be warned.
-* **only tested on Linux** - will not work on Windows and likely not on OSX out of the box
+* **only developed on Linux** - will not work on Windows (yet) and is untested by myself on macOS (except integration tests)
 * currently only supports manual scans - permanent watching of file system operations is planned
 * using `.gitignore` as the source of exclusion patterns is currently not considered, as one - at least me - would like to not commit any IDE specific dot-folders to git but still keep them synced over Dropbox; additionally global gitingore settings would need to be considered/sourced then as well
 

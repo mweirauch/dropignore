@@ -128,7 +128,6 @@ mod tests {
         temp.unwrap()
     }
 
-    #[cfg(target_os = "linux")]
     fn user_cache_directory_path() -> PathBuf {
         // we can't use tmpfs on linux as it doesn't
         // support extended file system attributes

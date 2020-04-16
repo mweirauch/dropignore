@@ -34,9 +34,9 @@ fn main() {
                 ),
         );
 
-    let configuration = Configuration::load(crate_name!()).unwrap();
-
     let matches = app.get_matches();
+
+    let configuration = Configuration::load(crate_name!()).unwrap();
 
     match matches.subcommand() {
         ("scan", Some(scan_matches)) => {
