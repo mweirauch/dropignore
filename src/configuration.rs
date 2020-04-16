@@ -27,9 +27,20 @@ impl Configuration {
         let mut config = Config::new();
 
         if let Some(file_path) = config_dir.join(format!("{}{}", app_name, ".yaml")).to_str() {
+            println!("CONFIG  \"{}\"", file_path);
             config.merge(config::File::new(file_path, FileFormat::Yaml).required(false))?;
         }
 
         config.try_into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn instantiation() {
+        Configuration::load("dropignore").unwrap();
     }
 }
