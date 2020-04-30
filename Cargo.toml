@@ -12,6 +12,7 @@ clap = "2.33.0"
 config = "0.10.1"
 directories = "2.0.2"
 globset = "0.4.5"
+notify = "4.0.15"
 serde = { version = "1.0.106", features = ["derive"] }
 walkdir = "2.3.1"
 xattr = "0.2.2"
