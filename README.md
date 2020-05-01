@@ -45,22 +45,32 @@ Any skip-spec which matches always wins over a previous ignore-spec match. So wi
 
 The supported glob patterns can be found in the [globset](https://docs.rs/globset) project.
 
+> It is recommended to use the `-n` (dry-run) option when testing new ignore or skip specifications!
+
 ### One-time scanning
 
-```txt
+```sh
 dropignore scan [-n] /path/to/Dropbox/
 ```
 
 This will scan the given path (or the current working directory if omitted) for ignore candidates.
 
-> It is recommended to use the `-n` (dry-run) option when testing new ignore or skip specifications!
+### Periodic watching
+
+```sh
+dropignore watch [-n] /path/to/Dropbox/
+```
+
+This will first perform a scan (see above) and then watch all subsequent file system changes and check for ignore candidates as they occur. Currently, these changes are handled after a delay of 2 seconds.
 
 ## Notes and Limitations
 
 * **use at your own risk** - allthough no data deletion is performed, be warned.
 * **only developed on Linux** - will not work on Windows (yet) and is untested by myself on macOS (except integration tests)
-* currently only supports manual scans - permanent watching of file system operations is planned
-* using `.gitignore` as the source of exclusion patterns is currently not considered, as one - at least me - would like to not commit any IDE specific dot-folders to git but still keep them synced over Dropbox; additionally global gitingore settings would need to be considered/sourced then as well
+* **using `.gitignore` as the source of exclusion patterns is currently not considered**
+  * there might be *projects* shared in Dropbox which are actually neither version controlled nor programming related
+  * someone might like to gitgnore any IDE specific files or folders, but still keep them synced over Dropbox
+  * global gitignore settings would need to be considered/sourced then as well
 
 ## Motivation
 
