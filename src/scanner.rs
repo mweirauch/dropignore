@@ -3,6 +3,7 @@ use std::process;
 use std::sync::mpsc::channel;
 use std::time::Duration;
 
+use log::{debug, error, info, trace, warn};
 use notify::{DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher};
 use walkdir::WalkDir;
 
@@ -26,8 +27,15 @@ impl Scanner {
     }
 
     pub fn scan(&self, directory_in: PathBuf, watch: bool, dry_run: bool) {
+        if !directory_in.exists() {
+            error!(
+                "The given directory {:?} does not exist! Exiting.",
+                directory_in
+            );
+            return;
+        }
         let directory = directory_in.canonicalize().unwrap();
-        println!("{:8}{:?}", if watch { "WATCH" } else { "SCAN" }, directory);
+        info!("{:8}{:?}", if watch { "WATCH" } else { "SCAN" }, directory);
 
         let mut scanner_stats: ScannerStats = Default::default();
 
@@ -46,7 +54,7 @@ impl Scanner {
 
             let watch_result = watcher.watch(&directory, RecursiveMode::Recursive);
             if watch_result.is_err() {
-                eprintln!(
+                error!(
                     "Failed watching {:?}: {:?}",
                     directory,
                     watch_result.err().unwrap()
@@ -67,12 +75,12 @@ impl Scanner {
                             _ => {}
                         }
                     }
-                    Err(error) => eprintln!("Watch error {:?}", error),
+                    Err(error) => warn!("Watch error {:?}", error),
                 }
             }
         }
 
-        println!(
+        info!(
             "Finished with {} known and {} new ignores.",
             scanner_stats.known_ignores, scanner_stats.new_ignores
         );
@@ -85,7 +93,7 @@ impl Scanner {
                 .map(|s| s.starts_with('.'))
                 .unwrap_or(false)
             {
-                // println!("SKIPDOT {:?}", path);
+                trace!("SKIPDOT {:?}", path);
                 return false;
             }
         }
@@ -93,17 +101,17 @@ impl Scanner {
         let matches = self.matcher.matches(path.to_str().unwrap().to_string());
         if matches {
             if self.dropbox.is_ignored(path) {
-                // println!("KNOWN   {:?}", path);
+                debug!("KNOWN   {:?}", path);
                 scanner_stats.known_ignores += 1;
                 return false;
             }
 
             if dry_run {
-                println!("IGNORE  {:?}", path);
+                info!("IGNORE  {:?}", path);
             } else if self.dropbox.ignore(path) {
-                println!("IGNORED {:?}", path);
+                info!("IGNORED {:?}", path);
             } else {
-                eprintln!("Failed ignoring {:?}", path);
+                warn!("Failed ignoring {:?}", path);
             }
 
             scanner_stats.new_ignores += 1;
