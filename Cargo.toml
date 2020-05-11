@@ -11,7 +11,9 @@ readme = "README.md"
 clap = "2.33.0"
 config = "0.10.1"
 directories = "2.0.2"
+fern = { version = "0.6.0", features = ["colored"] }
 globset = "0.4.5"
+log = "0.4.8"
 notify = "4.0.15"
 serde = { version = "1.0.106", features = ["derive"] }
 walkdir = "2.3.1"
