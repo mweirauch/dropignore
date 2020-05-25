@@ -17,7 +17,13 @@ log = "0.4.8"
 notify = "4.0.15"
 serde = { version = "1.0.106", features = ["derive"] }
 walkdir = "2.3.1"
+
+[target.'cfg(unix)'.dependencies]
 xattr = "0.2.2"
+
+[target.'cfg(windows)'.dependencies]
+widestring = "0.4.0"
+winapi = "0.3.8"
 
 [dev-dependencies]
 tempfile = "3.1.0"
