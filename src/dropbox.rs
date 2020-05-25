@@ -122,7 +122,7 @@ fn xattr_get(path: &Path, attribute_name: &str) -> Option<Vec<u8>> {
 }
 
 #[cfg(windows)]
-fn xattr_set(path: &Path, attribute_name: &str, attribute_value: &[u8; 1]) -> bool {
+fn xattr_set(path: &Path, attribute_name: &str, attribute_value: &[u8]) -> bool {
     unsafe {
         let stream_path = format!("{}:{}", path.to_str().unwrap(), attribute_name);
         let winapi_path = U16CString::from_str_unchecked(&stream_path);

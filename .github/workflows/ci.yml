@@ -1,5 +1,7 @@
 name: CI
+
 on: [push, pull_request]
+
 jobs:
   lint:
     name: Lint
@@ -15,19 +17,13 @@ jobs:
           toolchain: stable
           override: "true"
           profile: minimal
-          components: rustfmt, clippy
+          components: rustfmt
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
-
-      - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
 
   test:
     name: Test
@@ -49,6 +45,7 @@ jobs:
           toolchain: stable
           override: "true"
           profile: minimal
+          components: clippy
 
       - name: Run cargo build
         uses: actions-rs/cargo@v1
@@ -60,3 +57,9 @@ jobs:
         with:
           command: test
           args: -- --nocapture
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
