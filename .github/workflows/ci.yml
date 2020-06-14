@@ -1,12 +1,15 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  repository_dispatch:
+    types: [tag-release]
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +37,6 @@ jobs:
           - macos-latest
           - windows-latest
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -47,10 +49,23 @@ jobs:
           profile: minimal
           components: clippy
 
-      - name: Run cargo build
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo target dir
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run cargo check
         uses: actions-rs/cargo@v1
         with:
-          command: build
+          command: check
+          args: --all-targets
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
@@ -63,3 +78,129 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+  tag-release:
+    name: Tag Release
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: github.event.action == 'tag-release'
+    env:
+      CARGO_RELEASE_VERSION: 0.13.4
+    outputs:
+      cargo-release-tag: ${{ steps.fetch-release-tag.outputs.cargo-release-tag}}
+    steps:
+      - name: Debug repository_dispatch
+        run: 'echo "${{ toJson(github) }}"'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: "master"
+
+      - name: Set up toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: "true"
+          profile: minimal
+
+      - name: Cache cargo-release
+        id: cache-cargo-bin-cargo-release
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-cargo-bin-cargo-release-${{ env.CARGO_RELEASE_VERSION }}
+          path: ~/.cargo/bin/cargo-release
+
+      - name: Install cargo-release
+        if: steps.cache-cargo-bin-cargo-release.outputs.cache-hit != 'true'
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-release
+          version: ${{ env.CARGO_RELEASE_VERSION }}
+
+      - name: Preparing '${{ github.event.client_payload.cargo-release-level }}'-level release
+        run: echo 'cargo-release-level=${{ github.event.client_payload.cargo-release-level }}'
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+
+      # updates the Changelog during version increment (see release.toml)
+      - name: Run cargo release
+        uses: actions-rs/cargo@v1
+        with:
+          command: release
+          args: --no-confirm -vvvv ${{ github.event.client_payload.cargo-release-level }}
+        env:
+          CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch release tag
+        id: fetch-release-tag
+        run: echo "::set-output name=cargo-release-tag::$(git describe --abbrev=0 --tags)"
+
+  prepare-release:
+    name: Prepare Release
+    needs: [tag-release]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            bin: "${{ github.event.repository.name }}"
+            name: "${{ github.event.repository.name }}-linux-x86_64.tar.gz"
+          - os: macos-latest
+            bin: "${{ github.event.repository.name }}"
+            name: "${{ github.event.repository.name }}-macos-x86_64.tar.gz"
+          - os: windows-latest
+            bin: "${{ github.event.repository.name }}.exe"
+            name: "${{ github.event.repository.name }}-windows-x86_64.zip"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.tag-release.outputs.cargo-release-tag }}
+
+      - name: Set up toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: "true"
+          profile: minimal
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - name: Package
+        shell: bash
+        run: |
+          strip target/release/${{ matrix.bin }}
+          cd target/release
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]
+          then
+            7z a ../../${{ matrix.name }} ${{ matrix.bin }}
+          else
+            tar czvf ../../${{ matrix.name }} ${{ matrix.bin }}
+          fi
+          cd -
+
+      - name: Extract Release notes
+        if: matrix.os == 'ubuntu-latest'
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.tag-release.outputs.cargo-release-tag }}
+          draft: true
+          prerelease: ${{ github.event.client_payload.cargo-release-level == 'alpha' || github.event.client_payload.cargo-release-level == 'beta' || github.event.client_payload.cargo-release-level == 'rc' }}
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
+          files: |
+            ${{ github.event.repository.name }}*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

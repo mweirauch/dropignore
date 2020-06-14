@@ -1,0 +1,10 @@
+tag-name = "{{version}}"
+disable-publish = true
+tag-message = "(release) {{version}}"
+pre-release-commit-message = "(release) {{version}}"
+post-release-commit-message = "(release) start next development iteration {{next_version}}"
+pre-release-hook = [
+    "sh",
+    "-c",
+    "docker run --rm -e CHANGELOG_GITHUB_TOKEN -v $WORKSPACE_ROOT:/usr/local/src/your-app ferrarimarco/github-changelog-generator -u mweirauch -p dropignore --future-release $NEW_VERSION && git add CHANGELOG.md"
+]
