@@ -27,7 +27,7 @@ impl Configuration {
         let config_dir = project_dirs.config_dir();
         let mut config = Config::new();
 
-        if let Some(file_path) = config_dir.join(format!("{}{}", app_name, ".yaml")).to_str() {
+        if let Some(file_path) = config_dir.join(format!("{}{}", app_name, ".yml")).to_str() {
             debug!("Evaluating \"{}\"", file_path);
             config.merge(config::File::new(file_path, FileFormat::Yaml).required(false))?;
         }

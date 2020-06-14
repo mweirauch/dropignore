@@ -25,11 +25,11 @@ After you have installed the binary you need to create a configuration file whic
 
 The configuration file locations are as follows:
 
-| System      | Location                                                            |
-| :---------- | :------------------------------------------------------------------ |
-| Linux dist. | `/home/charly/.config/dropignore/dropignore.yaml`                   |
-| macOS       | `/Users/charly/Library/Preferences/dropignore/dropignore.yaml`      |
-| Windows     | `C:\Users\charly\AppData\Roaming\dropignore\config\dropignore.yaml` |
+| System      | Location                                                           |
+| :---------- | :----------------------------------------------------------------- |
+| Linux dist. | `/home/charly/.config/dropignore/dropignore.yml`                   |
+| macOS       | `/Users/charly/Library/Preferences/dropignore/dropignore.yml`      |
+| Windows     | `C:\Users\charly\AppData\Roaming\dropignore\config\dropignore.yml` |
 
 The configuration file could look like this:
 
