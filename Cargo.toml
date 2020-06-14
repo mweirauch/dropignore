@@ -28,3 +28,8 @@ winapi = "0.3.8"
 [dev-dependencies]
 tempfile = "3.1.0"
 rstest = "0.6"
+
+[profile.release]
+lto = true
+opt-level = 'z'
+codegen-units = 1
