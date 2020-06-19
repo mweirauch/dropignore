@@ -69,7 +69,8 @@ impl Scanner {
                         match event {
                             DebouncedEvent::Create(p)
                             | DebouncedEvent::Chmod(p)
-                            | DebouncedEvent::Rename(_, p) => {
+                            | DebouncedEvent::Rename(_, p)
+                            | DebouncedEvent::Write(p) => {
                                 Self::handle_entry(self, p.as_path(), dry_run, &mut scanner_stats);
                             }
                             _ => {}
