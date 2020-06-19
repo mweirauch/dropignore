@@ -2,8 +2,8 @@
 
 A tool to conveniently ignore files and folders from Dropbox sync.
 
-![License Apache-2.0 or MIT](https://badgen.net/badge/license/Apache-2.0,MIT/?list=or)
-[![Build status](https://badgen.net/github/checks/mweirauch/dropignore?icon=github&label=build)](https://github.com/mweirauch/dropignore/actions?query=workflow%3ACI+branch%3Amaster)
+![License Apache-2.0 or MIT](https://img.shields.io/badge/license-Apache--2.0%20or%20MIT-blue)
+[![Build status](https://img.shields.io/github/workflow/status/mweirauch/dropignore/CI?logo=GitHub)](https://github.com/mweirauch/dropignore/actions?query=workflow%3ACI+branch%3Amaster)
 
 ## What this tool is and is not
 
