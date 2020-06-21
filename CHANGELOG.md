@@ -4,7 +4,7 @@
 
 [Full Changelog](https://github.com/mweirauch/dropignore/compare/d0797188bda010bad0124fc63086c0be47244db1...0.1.0)
 
-TDB
+Initial Release
 
 **Merged pull requests:**
 
