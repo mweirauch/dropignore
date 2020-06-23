@@ -15,7 +15,7 @@ This is _currently_ not a [gitignore-style-solution everbody is begging for](htt
 
 ## Installation and Usage
 
-Currently no binary packages are provided, so you need a Rust installation for installation.
+You can download a binary release for Linux, macOS and Windows on the [Releases](https://github.com/mweirauch/dropignore/releases) page or compile and install it yourself in case you got a Rust installation set up:
 
 ```sh
 cargo install --git https://github.com/mweirauch/dropignore
