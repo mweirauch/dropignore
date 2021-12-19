@@ -9,8 +9,8 @@ readme = "README.md"
 
 [dependencies]
 clap = "2.33.1"
-config = { version = "0.10.1", default-features = false, features = ["yaml"] }
-directories = "2.0.2"
+config = { version = "0.11.0", default-features = false, features = ["yaml"] }
+directories = "4.0.1"
 fern = { version = "0.6.0", features = ["colored"] }
 globset = "0.4.5"
 log = "0.4.8"
@@ -22,12 +22,12 @@ walkdir = "2.3.1"
 xattr = "0.2.2"
 
 [target.'cfg(windows)'.dependencies]
-widestring = "0.4.2"
+widestring = "0.5.1"
 winapi = { version = "0.3.8", default-features = false, features = ["fileapi"] }
 
 [dev-dependencies]
 tempfile = "3.1.0"
-rstest = "0.6"
+rstest = "0.12.0"
 
 [profile.release]
 lto = true
