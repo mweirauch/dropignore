@@ -14,14 +14,14 @@ impl Matcher {
 
         if let Some(mc) = matcher_config {
             if let Some(ignore_specs) = &mc.ignore_specs {
-                let build_result = build_globset(&mut ignore_spec_builder, &ignore_specs);
+                let build_result = build_globset(&mut ignore_spec_builder, ignore_specs);
                 if build_result.is_err() {
                     return Err(build_result.err().unwrap().to_string());
                 }
             }
 
             if let Some(skip_specs) = &mc.skip_specs {
-                let build_result = build_globset(&mut skip_spec_builder, &skip_specs);
+                let build_result = build_globset(&mut skip_spec_builder, skip_specs);
                 if build_result.is_err() {
                     return Err(build_result.err().unwrap().to_string());
                 }
