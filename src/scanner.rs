@@ -3,7 +3,7 @@ use std::process;
 use std::sync::mpsc::channel;
 use std::time::Duration;
 
-use log::{debug, error, info, trace, warn};
+use log::{debug, error, info, warn};
 use notify::{DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher};
 use walkdir::WalkDir;
 
@@ -88,17 +88,6 @@ impl Scanner {
     }
 
     fn handle_entry(&self, path: &Path, dry_run: bool, scanner_stats: &mut ScannerStats) -> bool {
-        if let Some(file_name) = path.file_name() {
-            if file_name
-                .to_str()
-                .map(|s| s.starts_with('.'))
-                .unwrap_or(false)
-            {
-                trace!("SKIPDOT {:?}", path);
-                return false;
-            }
-        }
-
         let matches = self.matcher.matches(path.to_str().unwrap().to_string());
         if matches {
             if self.dropbox.is_ignored(path) {
@@ -119,6 +108,14 @@ impl Scanner {
             return false;
         }
 
-        true
+        // don't recurse dot-entries (only effective in "scan" mode)
+        let recurse = path
+            .file_name()
+            .unwrap_or_default()
+            .to_str()
+            .map(|s| !s.starts_with('.'))
+            .unwrap_or(true);
+
+        recurse
     }
 }
