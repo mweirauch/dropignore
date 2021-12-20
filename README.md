@@ -46,6 +46,8 @@ Any skip-spec which matches always wins over a previous ignore-spec match. So wi
 
 The supported glob patterns can be found in the [globset](https://docs.rs/globset) project.
 
+> Any dot-directories (e.g. ".git") encountered while scanning will not be recursed into any further and thus no ignore matching will be performed on their contents. Such directories should either be ignored or synced entirely.
+>
 > It is recommended to use the `-n` (dry-run) option when testing new ignore or skip specifications!
 
 ### One-time scanning
