@@ -1,6 +1,6 @@
 [package]
 name = "dropignore"
-version = "0.1.1"
+version = "0.1.2-alpha.0"
 description = "A tool to conveniently ignore files and folders from Dropbox sync."
 license = "Apache-2.0 OR MIT"
 edition = "2018"
