@@ -6,5 +6,5 @@ post-release-commit-message = "(release) start next development iteration {{next
 pre-release-hook = [
     "sh",
     "-c",
-    "docker run --rm -e CHANGELOG_GITHUB_TOKEN -v $WORKSPACE_ROOT:/usr/local/src/your-app ferrarimarco/github-changelog-generator -u mweirauch -p dropignore --future-release $NEW_VERSION && git add CHANGELOG.md"
+    "docker run --rm -e CHANGELOG_GITHUB_TOKEN -v $WORKSPACE_ROOT:/usr/local/src/your-app githubchangeloggenerator/github-changelog-generator --config-file .github/github_changelog_generator --future-release $NEW_VERSION && git add CHANGELOG.md"
 ]

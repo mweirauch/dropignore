@@ -1,0 +1,4 @@
+user=mweirauch
+project=dropignore
+enhancement-label=**Enhancements:**
+add-sections={"Maintenance":{"prefix":"**Maintenance:**","labels":["chore","dependencies"]}}
