@@ -1,25 +1,48 @@
 # Changelog
 
+## [0.1.1](https://github.com/mweirauch/dropignore/tree/0.1.1) (2021-12-22)
+
+[Full Changelog](https://github.com/mweirauch/dropignore/compare/0.1.0...0.1.1)
+
+It's now possible to ignore/skip dot-entries (dot-files, dot-directories) as a fix for issue #14. Such entries where previously skipped for sanity and needless directory traversal reasons (think VCS directories like .git, .svn, ...) but there might be other dot-entries to handle.
+
+**Enhancements:**
+
+- scanner: handle dot-entries [\#17](https://github.com/mweirauch/dropignore/pull/17) ([mweirauch](https://github.com/mweirauch))
+
+**Maintenance:**
+
+- ci: switch to official github-changelog-generator image [\#18](https://github.com/mweirauch/dropignore/pull/18) ([mweirauch](https://github.com/mweirauch))
+- ci: use cache@v2 for cargo caches [\#16](https://github.com/mweirauch/dropignore/pull/16) ([mweirauch](https://github.com/mweirauch))
+- chore: dependency updates and clippy fixes [\#15](https://github.com/mweirauch/dropignore/pull/15) ([mweirauch](https://github.com/mweirauch))
+
+**Closed issues:**
+
+- Skipping dot files [\#14](https://github.com/mweirauch/dropignore/issues/14)
+
 ## [0.1.0](https://github.com/mweirauch/dropignore/tree/0.1.0) (2020-06-21)
 
 [Full Changelog](https://github.com/mweirauch/dropignore/compare/d0797188bda010bad0124fc63086c0be47244db1...0.1.0)
 
 Initial Release
 
-**Merged pull requests:**
+**Maintenance:**
 
-- Handle recreation of matching entries within debounce phase [\#13](https://github.com/mweirauch/dropignore/pull/13) ([mweirauch](https://github.com/mweirauch))
 - Add issue templates [\#12](https://github.com/mweirauch/dropignore/pull/12) ([mweirauch](https://github.com/mweirauch))
 - chore: disable some default features from used crates [\#11](https://github.com/mweirauch/dropignore/pull/11) ([mweirauch](https://github.com/mweirauch))
-- Switch to yml-suffix for configuration file [\#10](https://github.com/mweirauch/dropignore/pull/10) ([mweirauch](https://github.com/mweirauch))
 - Release automation [\#9](https://github.com/mweirauch/dropignore/pull/9) ([mweirauch](https://github.com/mweirauch))
 - chore: run clippy on all platforms [\#7](https://github.com/mweirauch/dropignore/pull/7) ([mweirauch](https://github.com/mweirauch))
-- Windows support [\#6](https://github.com/mweirauch/dropignore/pull/6) ([mweirauch](https://github.com/mweirauch))
-- add logging and verbosity flag [\#5](https://github.com/mweirauch/dropignore/pull/5) ([mweirauch](https://github.com/mweirauch))
-- watch subcommand [\#4](https://github.com/mweirauch/dropignore/pull/4) ([mweirauch](https://github.com/mweirauch))
 - chore: osx-build [\#3](https://github.com/mweirauch/dropignore/pull/3) ([mweirauch](https://github.com/mweirauch))
 - dropbox: coverage [\#2](https://github.com/mweirauch/dropignore/pull/2) ([mweirauch](https://github.com/mweirauch))
 - Set up GitHub Actions [\#1](https://github.com/mweirauch/dropignore/pull/1) ([mweirauch](https://github.com/mweirauch))
+
+**Merged pull requests:**
+
+- Handle recreation of matching entries within debounce phase [\#13](https://github.com/mweirauch/dropignore/pull/13) ([mweirauch](https://github.com/mweirauch))
+- Switch to yml-suffix for configuration file [\#10](https://github.com/mweirauch/dropignore/pull/10) ([mweirauch](https://github.com/mweirauch))
+- Windows support [\#6](https://github.com/mweirauch/dropignore/pull/6) ([mweirauch](https://github.com/mweirauch))
+- add logging and verbosity flag [\#5](https://github.com/mweirauch/dropignore/pull/5) ([mweirauch](https://github.com/mweirauch))
+- watch subcommand [\#4](https://github.com/mweirauch/dropignore/pull/4) ([mweirauch](https://github.com/mweirauch))
 
 
 
