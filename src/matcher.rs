@@ -3,7 +3,7 @@ use globset::{Error, Glob, GlobSet, GlobSetBuilder};
 use crate::configuration::{MatcherConfig, MatcherSpec};
 
 pub struct Matcher {
-    build_result: GlobSet,
+    ignore_globset: GlobSet,
     skip_globset: GlobSet,
 }
 
@@ -29,7 +29,7 @@ impl Matcher {
         }
 
         let matcher = Self {
-            build_result: ignore_spec_builder.build().unwrap(),
+            ignore_globset: ignore_spec_builder.build().unwrap(),
             skip_globset: skip_spec_builder.build().unwrap(),
         };
 
@@ -37,7 +37,7 @@ impl Matcher {
     }
 
     pub fn matches(&self, path: String) -> bool {
-        let ignore_match = self.build_result.is_match(&path);
+        let ignore_match = self.ignore_globset.is_match(&path);
 
         if !ignore_match {
             return false;
