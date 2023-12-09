@@ -18,7 +18,10 @@ use winapi::{
 };
 
 #[cfg(unix)]
-const IGNORE_ATTRIBUTE_KEY: &str = "user.com.dropbox.ignored";
+#[cfg(not(target_os = "macos"))]
+const IGNORE_ATTRIBUTE_KEYS: [&str; 1] = ["user.com.dropbox.ignored"];
+#[cfg(target_os = "macos")]
+const IGNORE_ATTRIBUTE_KEYS: [&str; 2] = ["com.dropbox.ignored", "com.apple.fileprovider.ignore#P"];
 #[cfg(windows)]
 const IGNORE_ATTRIBUTE_KEY: &str = "com.dropbox.ignored";
 const IGNORE_ATTRIBUTE_VALUE_IGNORED: [u8; 1] = [b'1'];
@@ -32,28 +35,29 @@ impl Dropbox {
 
     #[cfg(unix)]
     pub fn is_ignored(&self, path: &Path) -> bool {
-        match xattr::get(path, IGNORE_ATTRIBUTE_KEY) {
-            Ok(attribute) => {
-                if let Some(bytes) = attribute {
-                    if bytes.eq(&IGNORE_ATTRIBUTE_VALUE_IGNORED) {
-                        return true;
-                    }
+        for key in IGNORE_ATTRIBUTE_KEYS {
+            if let Ok(Some(bytes)) = xattr::get(path, key) {
+                if bytes.eq(&IGNORE_ATTRIBUTE_VALUE_IGNORED) {
+                    continue;
                 }
-                false
             }
-            _ => false,
+
+            return false;
         }
+
+        true
     }
 
     #[cfg(unix)]
     pub fn ignore(&self, path: &Path) -> bool {
-        match xattr::set(path, IGNORE_ATTRIBUTE_KEY, &IGNORE_ATTRIBUTE_VALUE_IGNORED) {
-            Ok(_) => true,
-            Err(e) => {
+        for key in IGNORE_ATTRIBUTE_KEYS {
+            if let Err(e) = xattr::set(path, key, &IGNORE_ATTRIBUTE_VALUE_IGNORED) {
                 warn!("Failed ignoring {:?} due {:?}", path, e);
-                false
+                return false;
             }
         }
+
+        true
     }
 
     #[cfg(windows)]
@@ -179,7 +183,11 @@ mod tests {
 
     const TEST_ITEM_PREFIX: &str = "dropignore-testing";
     #[cfg(unix)]
-    const TEST_IGNORE_ATTRIBUTE_KEY: &str = "user.com.dropbox.ignored";
+    #[cfg(not(target_os = "macos"))]
+    const TEST_IGNORE_ATTRIBUTE_KEYS: [&str; 1] = ["user.com.dropbox.ignored"];
+    #[cfg(target_os = "macos")]
+    const TEST_IGNORE_ATTRIBUTE_KEYS: [&str; 2] =
+        ["com.dropbox.ignored", "com.apple.fileprovider.ignore#P"];
     #[cfg(windows)]
     const TEST_IGNORE_ATTRIBUTE_KEY: &str = "com.dropbox.ignored";
     const TEST_IGNORE_ATTRIBUTE_VALUE_IGNORED: [u8; 1] = [b'1'];
@@ -278,12 +286,9 @@ mod tests {
 
     #[cfg(unix)]
     fn arrange_ignored_attribute(path: &Path) {
-        xattr::set(
-            path,
-            TEST_IGNORE_ATTRIBUTE_KEY,
-            &TEST_IGNORE_ATTRIBUTE_VALUE_IGNORED,
-        )
-        .unwrap();
+        for key in TEST_IGNORE_ATTRIBUTE_KEYS {
+            xattr::set(path, key, &TEST_IGNORE_ATTRIBUTE_VALUE_IGNORED).unwrap();
+        }
     }
 
     #[cfg(windows)]
