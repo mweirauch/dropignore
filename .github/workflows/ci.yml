@@ -94,7 +94,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "master"
+          ref: ${{ github.event.repository.default_branch }}
 
       - name: Set up toolchain
         uses: actions-rs/toolchain@v1
