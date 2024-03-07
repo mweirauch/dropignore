@@ -21,7 +21,7 @@ You can download a binary release for Linux, macOS and Windows on the [Releases]
 cargo install --git https://github.com/mweirauch/dropignore
 ```
 
-After you have installed the binary you need to create a configuration file which contains the ignore and skip specifications of the file or folder names you want to ignore (not sync) or skip (keep synced) with your Dropbox. Providing skip specifications is optional. You just need them in case a ignore specification is too broad and would include any files or folders you don't want to be ignored.
+After you have installed the binary you need to create a configuration file which contains the ignore and skip specifications of the file or folder names you want to ignore (not sync) or skip (keep synced) with your Dropbox. Providing skip specifications is optional. You just need them in case an ignore specification is too broad and would include any files or folders you don't want to be ignored.
 
 The configuration file locations are as follows:
 
@@ -42,7 +42,7 @@ matcher:
     - pattern: "**/src/target"
 ```
 
-Any skip-spec which matches always wins over a previous ignore-spec match. So with the previous configuration the folders `myproject/target` and `myproject/src/target` would be selected as ignore candidates but the skip-spec would only allow for the former to be actually ignored.
+Any matching skip-spec always wins over a previous matching ignore-spec. So with the previous configuration the folders `myproject/target` and `myproject/src/target` would be selected as ignore candidates but the skip-spec would only allow for the former to be actually ignored.
 
 The supported glob patterns can be found in the [globset](https://docs.rs/globset) project.
 
@@ -50,7 +50,9 @@ The supported glob patterns can be found in the [globset](https://docs.rs/globse
 >
 > It is recommended to use the `-n` (dry-run) option when testing new ignore or skip specifications!
 
-### One-time scanning
+### Standalone Usage
+
+#### One-time scanning
 
 ```sh
 dropignore scan [-n] /path/to/Dropbox/
@@ -58,13 +60,85 @@ dropignore scan [-n] /path/to/Dropbox/
 
 This will scan the given path (or the current working directory if omitted) for ignore candidates.
 
-### Periodic watching
+#### Periodic watching
 
 ```sh
 dropignore watch [-n] /path/to/Dropbox/
 ```
 
 This will first perform a scan (see above) and then watch all subsequent file system changes and check for ignore candidates as they occur. Currently, these changes are handled after a delay of 2 seconds.
+
+### Run as a daemon
+
+In order to run `dropignore` automatically on system start, follow the instructions below.
+
+> Adjust the paths to the `dropignore` binary and your Dropbox installation folder accordingly!
+
+#### Linux with systemd
+
+Create file `~/.config/systemd/user/dropignore.service` with the following content:
+
+```ini
+[Unit]
+Description=dropignore
+
+[Service]
+ExecStart=%h/.local/bin/dropignore watch %h/Dropbox
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+```
+
+Now enable and load the unit:
+
+```sh
+$ systemctl --user daemon-reload
+$ systemctl enable --now --user dropignore.service
+
+# Check status
+$ systemctl status --user dropignore.service
+
+# For debugging
+$ journalctl --user-unit dropignore.service --follow
+```
+
+#### macOs with launchd
+
+Create file `$HOME/Library/LaunchAgents/com.user.dropignore.plist` with the following content:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.user.dropignore</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>sh</string>
+      <string>-c</string>
+      <string>$HOME/bin/dropignore watch $HOME/Library/CloudStorage/Dropbox/</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+  </dict>
+</plist>
+```
+
+Now enable and load the LaunchAgent:
+
+```sh
+$ launchctl load ~/Library/LaunchAgents/com.user.dropignore.plist
+
+# Check status
+$ launchctl list com.user.dropignore
+
+# For debugging
+$ log show --predicate 'eventMessage contains "com.user.dropignore"' --info --last 1h`
+```
 
 ## Notes and Limitations
 
