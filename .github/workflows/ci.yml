@@ -7,8 +7,15 @@ on:
     types: [tag-release]
 
 jobs:
+  check-duplicate-runs:
+    name: Check Duplicate Runs
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    steps: []
+
   lint:
     name: Lint
+    needs: [check-duplicate-runs]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,6 +37,7 @@ jobs:
 
   test:
     name: Test
+    needs: [check-duplicate-runs]
     strategy:
       matrix:
         os:
