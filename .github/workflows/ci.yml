@@ -10,12 +10,17 @@ jobs:
   check-duplicate-runs:
     name: Check Duplicate Runs
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-    steps: []
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - name: Skip Check
+        id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
 
   lint:
     name: Lint
     needs: [check-duplicate-runs]
+    if: needs.check-duplicate-runs.outputs.should_skip != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,6 +43,7 @@ jobs:
   test:
     name: Test
     needs: [check-duplicate-runs]
+    if: needs.check-duplicate-runs.outputs.should_skip != 'true'
     strategy:
       matrix:
         os:
