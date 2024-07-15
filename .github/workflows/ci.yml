@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  pull_request:
   push:
+  pull_request:
   repository_dispatch:
     types: [tag-release]
 
@@ -31,6 +31,8 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt
+
+      - uses: Swatinem/rust-cache@v2
 
       - name: Run cargo fmt
         run: cargo fmt --all -- --check
