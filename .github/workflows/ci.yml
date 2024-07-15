@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  push:
   pull_request:
+  push:
   repository_dispatch:
     types: [tag-release]
 
