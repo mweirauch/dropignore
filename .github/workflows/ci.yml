@@ -13,6 +13,8 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
+      - name: Debug
+        run: 'echo "${{ toJson(github) }}"'
       - name: Skip Check
         id: skip_check
         # uses: fkirc/skip-duplicate-actions@v5 # FIXME: doesn't work?
@@ -45,7 +47,7 @@ jobs:
         run: cargo fmt --all -- --check
 
   test:
-    name: Test
+    name: Test (${{ matrix.name }})
     needs: [check-duplicate-runs]
     if: needs.check-duplicate-runs.outputs.should_skip != 'true'
     strategy:
@@ -54,10 +56,10 @@ jobs:
           - name: Linux (x86_64)
             os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          - name: MacOS (x86_64)
+          - name: macOS (x86_64)
             os: macos-latest
             target: x86_64-apple-darwin
-          - name: MacOS (aarch64)
+          - name: macOS (aarch64)
             os: macos-latest
             target: aarch64-apple-darwin
           - name: Windows (x86_64)
